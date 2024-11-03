@@ -1,0 +1,183 @@
+MainActivity.kt----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+package com.example.transitions
+
+import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.FragmentTransaction
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        // Cargar el primer fragmento
+        if (savedInstanceState == null) {
+            val fragmentA = FragmentA()
+            supportFragmentManager.beginTransaction()
+                .add(R.id.fragmentContainer, fragmentA)
+                .commit()
+        }
+    }
+}
+
+ativity_mian.xml----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
+
+FragmentA.kt----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+package com.example.transitions
+
+import android.content.Intent
+import android.os.Bundle
+import android.transition.TransitionInflater
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
+import androidx.core.app.ActivityOptionsCompat
+import androidx.fragment.app.Fragment
+
+class FragmentA : Fragment() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Establecer la transición de salida
+        enterTransition = TransitionInflater.from(requireContext()).inflateTransition(R.transition.fragment_a_exit_transition)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_a, container, false)
+
+        val button: Button = view.findViewById(R.id.buttonA)
+        button.setOnClickListener {
+            // Reemplazar FragmentA con FragmentB
+            val fragmentB = FragmentB()
+            fragmentManager?.beginTransaction()
+                ?.replace(R.id.fragmentContainer, fragmentB)
+                ?.addToBackStack(null)
+                ?.commit()
+        }
+
+        return view
+    }
+}
+
+frament_a.xml----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textViewA"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fragment A"
+        android:textSize="24sp" />
+
+    <ImageView
+        android:id="@+id/imageViewA"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/gato" />
+
+    <Button
+        android:id="@+id/buttonA"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Animar" />
+</LinearLayout>
+FragmentB.kt----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+package com.example.transitions
+
+import android.os.Bundle
+import android.transition.TransitionInflater
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import androidx.fragment.app.Fragment
+
+
+class FragmentB : Fragment() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Establecer la transición de entrada
+        enterTransition = TransitionInflater.from(requireContext()).inflateTransition(R.transition.fragment_b_enter_transition)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_b, container, false)
+
+        val button: Button = view.findViewById(R.id.buttonB)
+        button.setOnClickListener {
+            // Volver a FragmentA
+            fragmentManager?.popBackStack()
+        }
+
+        return view
+    }
+}
+
+frament_b.xml-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textViewB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fragment B"
+        android:textSize="24sp" />
+
+    <ImageView
+        android:id="@+id/imageViewB"
+        android:layout_width="wrap_content"
+        android:layout_height="555dp"
+        android:src="@drawable/lloro" />
+
+    <Button
+        android:id="@+id/buttonB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Click Me" />
+</LinearLayout>
+fragment_b_enter_transition.xml-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="utf-8"?>
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android">
+    <slide android:duration="1000" />
+    <fade android:duration="1000" />
+</transitionSet>
+
+fragment_a_exit_transition-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="utf-8"?>
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android">
+    <slide android:duration="200" />
+    <fade android:duration="200" />
+</transitionSet>
+
